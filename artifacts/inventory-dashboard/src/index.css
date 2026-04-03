@@ -66,122 +66,94 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE */
+/* ── FUTURISTIC GLASSMORPHISM THEME ─────────────────────────── */
 :root {
-  --background: 210 20% 98%;
-  --foreground: 222.2 84% 4.9%;
-  
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
-  
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --card-border: 214.3 31.8% 91.4%;
-  
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --popover-border: 214.3 31.8% 91.4%;
-  
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  
-  --destructive: 0 84.2% 60.2%;
+  /* Deep space dark base */
+  --background: 228 30% 5%;
+  --foreground: 210 40% 96%;
+
+  --border: 220 30% 18%;
+  --input: 228 28% 12%;
+  --ring: 195 100% 50%;
+
+  /* Glass card surface */
+  --card: 228 28% 8%;
+  --card-foreground: 210 40% 96%;
+  --card-border: 220 30% 18%;
+
+  --popover: 228 30% 7%;
+  --popover-foreground: 210 40% 96%;
+  --popover-border: 220 30% 20%;
+
+  /* Cyan primary accent */
+  --primary: 195 100% 50%;
+  --primary-foreground: 228 30% 5%;
+
+  --secondary: 228 28% 12%;
+  --secondary-foreground: 210 40% 80%;
+
+  --muted: 228 25% 12%;
+  --muted-foreground: 215 20% 55%;
+
+  --accent: 270 70% 60%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 80% 60%;
   --destructive-foreground: 210 40% 98%;
-  
-  --chart-1: 221.2 83.2% 53.3%;
-  --chart-2: 212 95% 68%;
-  --chart-3: 216 92% 60%;
-  --chart-4: 210 98% 78%;
-  --chart-5: 212 97% 87%;
-  
-  /* Dark Sidebar */
-  --sidebar: 222 47% 11%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-primary: 221.2 83.2% 53.3%;
-  --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-ring: 221.2 83.2% 53.3%;
+
+  /* Chart colors — neon palette */
+  --chart-1: 195 100% 50%;
+  --chart-2: 270 70% 65%;
+  --chart-3: 140 70% 55%;
+  --chart-4: 35 100% 60%;
+  --chart-5: 330 80% 65%;
+
+  /* Sidebar: fully dark glass */
+  --sidebar: 228 35% 4%;
+  --sidebar-foreground: 210 40% 90%;
+  --sidebar-border: 220 30% 12%;
+  --sidebar-primary: 195 100% 50%;
+  --sidebar-primary-foreground: 228 30% 5%;
+  --sidebar-accent: 228 28% 10%;
+  --sidebar-accent-foreground: 195 100% 70%;
+  --sidebar-ring: 195 100% 50%;
 
   --app-font-sans: 'Inter', system-ui, sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'Space Mono', monospace;
-  --radius: 0.5rem;
-  
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --radius: 0.75rem;
+
+  --button-outline: rgba(0, 212, 255, 0.15);
+  --badge-outline: rgba(0, 212, 255, 0.08);
   --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: rgba(0, 212, 255, 0.04);
+  --elevate-2: rgba(0, 212, 255, 0.09);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-}
+  /* Neon glow shadows */
+  --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.35), 0 0 60px rgba(0, 212, 255, 0.12);
+  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.35), 0 0 60px rgba(168, 85, 247, 0.12);
+  --glow-green: 0 0 20px rgba(52, 211, 153, 0.35), 0 0 60px rgba(52, 211, 153, 0.12);
 
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
-  
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --card-border: 217.2 32.6% 17.5%;
-  
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --popover-border: 217.2 32.6% 17.5%;
-  
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  
-  --chart-1: 217.2 91.2% 59.8%;
-  --chart-2: 212 95% 68%;
-  --chart-3: 216 92% 60%;
-  --chart-4: 210 98% 78%;
-  --chart-5: 212 97% 87%;
-  
-  --sidebar: 222.2 84% 4.9%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-primary: 217.2 91.2% 59.8%;
-  --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-ring: 224.3 76.3% 48%;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
 
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  /* Computed borders */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
 @layer base {
@@ -189,7 +161,74 @@
     @apply border-border;
   }
 
+  html, body {
+    @apply h-full;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: hsl(228, 30%, 5%);
+  }
+}
+
+/* ── GLASSMORPHISM UTILITIES ─────────────────────────────────── */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glass-sidebar {
+    background: rgba(4, 8, 20, 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-right: 1px solid rgba(0, 212, 255, 0.1);
+  }
+
+  .glass-header {
+    background: rgba(5, 10, 25, 0.75);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+  }
+
+  .neon-border-cyan {
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.05) inset, 0 0 30px rgba(0, 212, 255, 0.06);
+  }
+
+  .neon-border-purple {
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.05) inset, 0 0 30px rgba(168, 85, 247, 0.06);
+  }
+
+  .neon-glow-cyan {
+    box-shadow: var(--glow-cyan);
+  }
+
+  .neon-text-cyan {
+    color: hsl(195, 100%, 60%);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
   }
 }
