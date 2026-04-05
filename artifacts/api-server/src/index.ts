@@ -1,25 +1,12 @@
 import app from "./app";
-import { logger } from "./lib/logger";
 
-const rawPort = process.env["PORT"];
+// ভেরসেল (Vercel) এর জন্য এটি প্রয়োজন
+export default app;
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+// লোকাল হোস্টে চালানোর জন্য নিচের অংশটি থাকে
+const port = process.env.PORT || 3000;
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 }
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-app.listen(port, (err) => {
-  if (err) {
-    logger.error({ err }, "Error listening on port");
-    process.exit(1);
-  }
-
-  logger.info({ port }, "Server listening");
-});
