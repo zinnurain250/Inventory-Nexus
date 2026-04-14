@@ -1,15 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Search, Pencil, Trash2, Package } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  useListInventory,
-  useCreateInventoryItem,
-  useUpdateInventoryItem,
-  useDeleteInventoryItem,
-  getListInventoryQueryKey,
-} from "@workspace/api-client-react";
-import type { InventoryItem, CreateInventoryItemBody } from "@workspace/api-client-react";
+import { Plus, Search, Pencil, Trash2, Package, RefreshCw, TriangleAlert } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,8 +22,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/format";
+import {
+  createInventoryViaAppsScript,
+  deleteInventoryViaAppsScript,
+  hasInventoryAppsScriptUrl,
+  inventoryAppsScriptUrl,
+  listInventoryFromAppsScript,
+  type InventoryItem,
+  type InventoryWriteInput,
+  updateInventoryViaAppsScript,
+} from "@/lib/apps-script-inventory";
 
 const CATEGORIES = ["Electronics", "Furniture", "Stationery", "Clothing", "Food", "Other"];
+const INVENTORY_QUERY_KEY = ["apps-script-inventory"];
 
 function InventoryForm({
   initialData,
@@ -39,12 +42,12 @@ function InventoryForm({
   onCancel,
   loading,
 }: {
-  initialData?: Partial<CreateInventoryItemBody>;
-  onSubmit: (data: CreateInventoryItemBody) => void;
+  initialData?: Partial<InventoryWriteInput>;
+  onSubmit: (data: InventoryWriteInput) => void;
   onCancel: () => void;
   loading: boolean;
 }) {
-  const [form, setForm] = useState<CreateInventoryItemBody>({
+  const [form, setForm] = useState<InventoryWriteInput>({
     name: initialData?.name ?? "",
     sku: initialData?.sku ?? "",
     category: initialData?.category ?? "Electronics",
@@ -55,11 +58,10 @@ function InventoryForm({
     location: initialData?.location ?? "",
   });
 
-  const handleChange = (field: keyof CreateInventoryItemBody, value: string | number) => {
+  const handleChange = (field: keyof InventoryWriteInput, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
-
-  return (
+return (
     <div className="grid grid-cols-2 gap-4 py-2">
       <div className="col-span-2 space-y-1.5">
         <Label className="text-white/60 text-xs uppercase tracking-wider">Name</Label>
@@ -108,54 +110,122 @@ function InventoryForm({
     </div>
   );
 }
-
 export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [editItem, setEditItem] = useState<InventoryItem | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { data: items = [] } = useListInventory({ search: search || undefined, category: categoryFilter || undefined });
-  const createMutation = useCreateInventoryItem();
-  const updateMutation = useUpdateInventoryItem();
-  const deleteMutation = useDeleteInventoryItem();
+const inventoryQuery = useQuery({
+    queryKey: INVENTORY_QUERY_KEY,
+    queryFn: listInventoryFromAppsScript,
+    refetchInterval: 15000,
+    enabled: hasInventoryAppsScriptUrl,
+  });
+  const allItems = inventoryQuery.data ?? [];
 
-  const handleCreate = (data: CreateInventoryItemBody) => {
-    createMutation.mutate({ data }, {
-      onSuccess: () => { queryClient.invalidateQueries({ queryKey: getListInventoryQueryKey() }); setShowAdd(false); },
+  const items = useMemo(() => {
+    return allItems.filter((item) => {
+      const matchesCategory = !categoryFilter || item.category === categoryFilter;
+      const searchTerm = search.trim().toLowerCase();
+      const matchesSearch = !searchTerm
+        || item.name.toLowerCase().includes(searchTerm)
+        || item.sku.toLowerCase().includes(searchTerm);
+      return matchesCategory && matchesSearch;
     });
+  }, [allItems, categoryFilter, search]);
+
+  const createMutation = useMutation({
+    mutationFn: (data: InventoryWriteInput) => createInventoryViaAppsScript(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
+      setShowAdd(false);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: InventoryWriteInput }) => updateInventoryViaAppsScript(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
+      setEditItem(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteInventoryViaAppsScript(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INVENTORY_QUERY_KEY });
+      setDeleteId(null);
+    },
+  });
+
+  const handleCreate = (data: InventoryWriteInput) => {
+    createMutation.mutate(data);
   };
 
-  const handleUpdate = (data: CreateInventoryItemBody) => {
+  const handleUpdate = (data: InventoryWriteInput) => {
     if (!editItem) return;
-    updateMutation.mutate({ id: editItem.id, data }, {
-      onSuccess: () => { queryClient.invalidateQueries({ queryKey: getListInventoryQueryKey() }); setEditItem(null); },
-    });
+    updateMutation.mutate({ id: editItem.id, data });
   };
 
   const handleDelete = () => {
-    if (deleteId === null) return;
-    deleteMutation.mutate({ id: deleteId }, {
-      onSuccess: () => { queryClient.invalidateQueries({ queryKey: getListInventoryQueryKey() }); setDeleteId(null); },
-    });
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId);
   };
-
-  return (
+return
+(
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Inventory</h1>
           <p className="text-sm text-white/35 mt-1">{items.length} items in stock</p>
         </div>
-        <Button onClick={() => setShowAdd(true)}
-          className="gap-2 bg-cyan-500/15 border border-cyan-500/25 text-cyan-300 hover:bg-cyan-500/25 hover:text-cyan-200 rounded-xl">
-          <Plus className="h-4 w-4" /> Add Item
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => inventoryQuery.refetch()}
+            disabled={inventoryQuery.isFetching}
+            className="border-white/10 text-white/70 hover:bg-white/5 hover:text-white rounded-xl"
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${inventoryQuery.isFetching ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setShowAdd(true)}
+            className="gap-2 bg-cyan-500/15 border border-cyan-500/25 text-cyan-300 hover:bg-cyan-500/25 hover:text-cyan-200 rounded-xl">
+            <Plus className="h-4 w-4" /> Add Item
+          </Button>
+        </div>
       </div>
 
-      {/* Filters */}
+      {!hasInventoryAppsScriptUrl && (
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+            <div>
+              <p className="font-medium">Inventory is not configured yet.</p>
+              <p className="mt-1 text-amber-100/80">
+                Set <code className="rounded bg-black/20 px-1 py-0.5">VITE_INVENTORY_APPS_SCRIPT_URL</code> to your deployed Google Apps Script Web App URL.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {inventoryQuery.error && (
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
+            <div>
+              <p className="font-medium">Could not reach the inventory Apps Script.</p>
+              <p className="mt-1 text-red-100/80">{inventoryQuery.error instanceof Error ? inventoryQuery.error.message : "Unknown error"}</p>
+              <p className="mt-2 text-red-100/65 break-all">Current URL: {inventoryAppsScriptUrl}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 pointer-events-none" />
@@ -176,19 +246,26 @@ export default function Inventory() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="rounded-2xl overflow-hidden glass" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/5">
                 {["Name", "SKU", "Category", "Qty", "Unit Price", "Cost Price", "Location", "Status", ""].map((h, i) => (
-                  <th key={i} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-white/30 ${i >= 3 && i <= 5 ? "text-right" : i === 8 ? "text-right" : "text-left"}`}>{h}</th>
+                  <th key={i} className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-white/30 ${i >= 3 && i <=
+5 ? "text-right" : i === 8 ? "text-right" : "text-left"}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {items.length === 0 ? (
+              {inventoryQuery.isLoading ? (
+                <tr>
+                  <td colSpan={9} className="px-4 py-16 text-center text-white/30">
+                    <RefreshCw className="mx-auto mb-3 h-8 w-8 animate-spin opacity-30" />
+                    <p className="font-medium text-white/40">Loading inventory…</p>
+                  </td>
+                </tr>
+              ) : items.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-16 text-center text-white/30">
                     <Package className="mx-auto h-10 w-10 opacity-20 mb-3" />
@@ -243,7 +320,7 @@ export default function Inventory() {
       </Dialog>
 
       <Dialog open={!!editItem} onOpenChange={(o) => !o && setEditItem(null)}>
-        <DialogContent className="max-w-lg border-white/10 text-white" style={{ background: "rgba(8,14,36,0.95)", backdropFilter: "blur(40px)" }}>
+<DialogContent className="max-w-lg border-white/10 text-white" style={{ background: "rgba(8,14,36,0.95)", backdropFilter: "blur(40px)" }}>
           <DialogHeader>
             <DialogTitle className="text-white">Edit Inventory Item</DialogTitle>
           </DialogHeader>
